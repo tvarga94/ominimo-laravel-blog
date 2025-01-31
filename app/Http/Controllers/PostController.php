@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\PostRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -31,7 +32,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Show post creation form.'], 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePostRequest $request): JsonResponse
     {
         $data = $request->validated();
         $data['user_id'] = Auth::id();
@@ -50,7 +51,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Show edit form.', 'post' => $post]);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdatePostRequest $request, int $id): JsonResponse
     {
         $post = $this->postRepository->find($id);
 
