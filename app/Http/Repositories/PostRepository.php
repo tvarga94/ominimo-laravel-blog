@@ -22,7 +22,9 @@ class PostRepository implements PostRepositoryInterface
 
     public function create(array $data): Post
     {
-        return Auth::user()->posts()->create($data);
+        $data['user_id'] = Auth::id() ?? null;
+
+        return Post::create($data);
     }
 
     public function update(int $id, array $data): Post
@@ -34,7 +36,9 @@ class PostRepository implements PostRepositoryInterface
 
     public function delete(int $id): bool
     {
-        return Auth::user()->posts()->where('id', $id)->delete();
+        $post = Post::findOrFail($id);
+
+        return $post->delete();
     }
 
     public function paginate(int $perPage): LengthAwarePaginator

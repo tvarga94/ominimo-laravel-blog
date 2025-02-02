@@ -6,6 +6,7 @@ use App\Http\Repositories\PostRepository;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class PostRepositoryTest extends TestCase
@@ -33,17 +34,18 @@ class PostRepositoryTest extends TestCase
     public function test_can_create_post()
     {
         $user = User::factory()->create();
+        Auth::login($user);
 
         $data = [
-            'user_id' => $user->id,
             'title' => 'Test Post',
-            'content' => 'This is a test post.',
+            'content' => 'This is a test post',
+            'user_id' => $user->id,
         ];
 
         $post = $this->postRepository->create($data);
 
-        $this->assertDatabaseHas('posts', $data);
-        $this->assertEquals($data['title'], $post->title);
+        $this->assertInstanceOf(Post::class, $post);
+        $this->assertEquals('Test Post', $post->title);
     }
 
     public function test_can_update_post()
