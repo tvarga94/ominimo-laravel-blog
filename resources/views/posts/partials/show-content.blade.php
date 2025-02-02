@@ -17,7 +17,7 @@
     </a>
 
     @auth
-        @if(auth()->id() === $post->user_id)
+        @if(auth()->user()->getAttributes()['role'] === 'admin' || auth()->id() === $post->user_id)
             <a href="{{ route('posts.edit', $post->id) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
                 Edit
             </a>
@@ -31,4 +31,50 @@
             </form>
         @endif
     @endauth
+</div>
+
+<div class="mt-8">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Comments</h2>
+
+    @if ($post->comments->isEmpty())
+        <p class="text-gray-500 mt-2">No comments yet. Be the first to comment!</p>
+    @else
+        @foreach ($post->comments as $comment)
+            <div class="p-4 bg-gray-100 rounded-md mt-4">
+                <p class="text-gray-700">{{ $comment->comment }}</p>
+                <p class="text-sm text-gray-500">By: {{ $comment->user->name ?? 'Guest' }} | {{ $comment->created_at->format('F j, Y') }}</p>
+
+                @auth
+                    @if(auth()->user()->isAdmin() || auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
+                        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="mt-2" onsubmit="return confirm('Are you sure?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                    @endif
+                @endauth
+            </div>
+        @endforeach
+    @endif
+</div>
+
+<div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Leave a Comment</h3>
+
+    <form action="{{ route('comments.store', $post->id) }}" method="POST" class="mt-2">
+        @csrf
+
+        <textarea name="comment" required
+                  class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                  placeholder="Write your comment here..."></textarea>
+
+        <div class="flex justify-end mt-2">
+            <button type="submit"
+                    class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+                Post Comment
+            </button>
+        </div>
+    </form>
 </div>

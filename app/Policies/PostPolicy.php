@@ -7,13 +7,14 @@ use App\Models\User;
 
 class PostPolicy
 {
+    //@TODO: isAdmin ijn User model
     public function update(User $user, Post $post): bool
     {
-        return $user->isAdmin() || $user->id === $post->user_id;
+        return $user->role === 'admin' || $user->id === $post->user_id;
     }
 
     public function delete(User $user, Post $post): bool
     {
-        return $user->isAdmin() || $user->id === $post->user_id;
+        return $user->role === 'admin' || $user->id === $post->user_id;
     }
 }

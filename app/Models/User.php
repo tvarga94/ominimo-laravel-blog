@@ -49,12 +49,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => 'string'
         ];
+    }
+
+    public function getRoleAttribute($value): ?string
+    {
+        return $value ?? null;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return ($this->role ?? '') === self::ROLE_ADMIN;
     }
 
     public function posts(): HasMany

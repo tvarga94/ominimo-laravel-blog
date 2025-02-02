@@ -14,7 +14,7 @@ class CommentSeeder extends Seeder
      */
     public function run(): void
     {
-        $firstUser = User::where('role', 'user')->first();
+        $firstUser = User::where('role', NULL)->first();
 
         foreach (Post::all() as $post) {
             Comment::factory(2)->create([

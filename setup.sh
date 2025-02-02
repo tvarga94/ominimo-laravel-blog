@@ -8,9 +8,6 @@ composer install --no-interaction --prefer-dist --optimize-autoloader
 echo "Generating application key..."
 php artisan key:generate
 
-echo "Running migrations and seeding the database..."
-php artisan migrate:fresh --seed
-
 echo "Installing frontend dependencies..."
 npm install
 npm run build
