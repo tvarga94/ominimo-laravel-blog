@@ -9,6 +9,10 @@
             <file>tests/Unit/CommentRepositoryTest.php</file>
             <file>tests/Unit/PostRepositoryTest.php</file>
         </testsuite>
+        <testsuite name="Feature">
+            <file>tests/Feature/CommentFeatureTest.php</file>
+            <file>tests/Feature/PostFeatureTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>
