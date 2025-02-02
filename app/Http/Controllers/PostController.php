@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DeletePostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\PostRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
     use AuthorizesRequests;
+
     private PostRepositoryInterface $postRepository;
 
     public function __construct(PostRepositoryInterface $postRepository)
@@ -43,12 +42,7 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request): RedirectResponse
     {
-        $this->postRepository->create([
-            'user_id' => Auth::id(),
-            'title' => $request['title'],
-            'content' => $request['content'],
-        ]);
-
+        $this->postRepository->create($request->validated());
         return redirect()->route('posts.index')->with('success', 'Post created successfully.');
     }
 
@@ -56,7 +50,9 @@ class PostController extends Controller
     {
         $post = $this->postRepository->find($id);
 
-        if ($post->user_id !== Auth::id()) {
+        try {
+            $this->authorize('update', $post);
+        } catch (AuthorizationException $e) {
             return redirect()->route('posts.index')->with('error', 'You are not authorized to edit this post.');
         }
 
@@ -70,7 +66,7 @@ class PostController extends Controller
         try {
             $this->authorize('update', $post);
         } catch (AuthorizationException $e) {
-            return redirect()->route('posts.index')->with('error', 'You are not authorized to edit this post.');
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to update this post.');
         }
 
         $this->postRepository->update($id, $request->validated());

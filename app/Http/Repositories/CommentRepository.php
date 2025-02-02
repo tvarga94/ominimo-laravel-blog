@@ -4,6 +4,7 @@ namespace App\Http\Repositories;
 
 use App\Models\Comment;
 use App\CommentRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class CommentRepository implements CommentRepositoryInterface
 {
@@ -19,6 +20,11 @@ class CommentRepository implements CommentRepositoryInterface
 
     public function delete(int $id): bool
     {
-        return Comment::where('id', $id)->delete();
+        return Comment::destroy($id);
+    }
+
+    public function getCommentsByPost(int $postId): Collection
+    {
+        return Comment::where('post_id', $postId)->latest()->get();
     }
 }

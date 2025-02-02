@@ -11,7 +11,6 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     public const ROLE_ADMIN = 'admin';
-    public const ROLE_USER = 'user';
 
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -38,6 +37,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    private string $role;
+
     /**
      * Get the attributes that should be cast.
      *
@@ -59,10 +60,5 @@ class User extends Authenticatable
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
     }
 }

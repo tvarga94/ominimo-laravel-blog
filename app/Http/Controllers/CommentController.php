@@ -7,12 +7,13 @@ use App\Http\Requests\StoreCommentRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Post;
 
 class CommentController extends Controller
 {
     use AuthorizesRequests;
+
     private CommentRepositoryInterface $commentRepository;
 
     public function __construct(CommentRepositoryInterface $commentRepository)
