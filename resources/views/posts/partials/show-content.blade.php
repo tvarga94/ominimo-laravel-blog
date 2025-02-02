@@ -45,7 +45,7 @@
                 <p class="text-sm text-gray-500">By: {{ $comment->user->name ?? 'Guest' }} | {{ $comment->created_at->format('F j, Y') }}</p>
 
                 @auth
-                    @if(auth()->user()->isAdmin() || auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
+                    @if('admin' === auth()->user()->getAttributes()['role'] || auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
                         <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="mt-2" onsubmit="return confirm('Are you sure?');">
                             @csrf
                             @method('DELETE')

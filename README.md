@@ -16,7 +16,7 @@ This is a Laravel-based blog project designed as a test task for Ominimo. The ap
 
 ### 1️⃣ Clone the Repository
 ```sh
-git@github.com:tvarga94/ominimo-laravel-blog.git
+git clone git@github.com:tvarga94/ominimo-laravel-blog.git
 cd ominimo-laravel-blog
 ```
 
@@ -36,6 +36,14 @@ DB_USERNAME=your_database_user
 DB_PASSWORD=your_database_password
 ```
 
+### 3️⃣ Make the Setup Script Executable
+Make sure the setup script is executable and then run it.
+
+```sh
+chmod +x setup.sh
+./setup.sh
+```
+
 Now create the database with:
 ```sh
 php artisan migrate
@@ -44,14 +52,6 @@ php artisan migrate
 And run the seeder files:
 ```sh
 php artisan db:seed
-```
-
-### 3️⃣ Make the Setup Script Executable
-Make sure the setup script is executable and then run it.
-
-```sh
-chmod +x setup.sh
-./setup.sh
 ```
 
 The script will:
@@ -64,6 +64,10 @@ To run **unit** and **feature** tests, execute:
 ```sh
 php artisan test
 ```
+
+!!!IMPORTANT!!!
+Since we don't have different database for testing, before we run the tests we purge the database.
+So after we are finished with the test run we need to rerun the seeder files so we will have the orginal seeder data.
 
 ---
 
