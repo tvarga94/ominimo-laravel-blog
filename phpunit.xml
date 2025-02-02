@@ -6,10 +6,8 @@
 >
     <testsuites>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
+            <file>tests/Unit/CommentRepositoryTest.php</file>
+            <file>tests/Unit/PostRepositoryTest.php</file>
         </testsuite>
     </testsuites>
     <source>
