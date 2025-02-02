@@ -5,17 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DeletePostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Models\Post;
 use App\PostRepositoryInterface;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Foundation\Application;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
     private PostRepositoryInterface $postRepository;
 
     public function __construct(PostRepositoryInterface $postRepository)
@@ -68,15 +67,16 @@ class PostController extends Controller
     {
         $post = $this->postRepository->find($id);
 
-        if ($post->user_id !== Auth::id()) {
-            return redirect()->route('posts.index')->with('error', 'You are not authorized to update this post.');
+        try {
+            $this->authorize('update', $post);
+        } catch (AuthorizationException $e) {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to edit this post.');
         }
 
         $this->postRepository->update($id, $request->validated());
 
         return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
-
 
     public function destroy(int $id): RedirectResponse
     {
@@ -86,7 +86,9 @@ class PostController extends Controller
             return redirect()->route('posts.index')->with('error', 'Post not found.');
         }
 
-        if ($post->user_id !== Auth::id()) {
+        try {
+            $this->authorize('delete', $post);
+        } catch (AuthorizationException $e) {
             return redirect()->route('posts.index')->with('error', 'You are not authorized to delete this post.');
         }
 

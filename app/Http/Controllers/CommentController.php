@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\CommentRepositoryInterface;
 use App\Http\Requests\StoreCommentRequest;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    use AuthorizesRequests;
     private CommentRepositoryInterface $commentRepository;
 
     public function __construct(CommentRepositoryInterface $commentRepository)
@@ -23,7 +26,7 @@ class CommentController extends Controller
 
         $this->commentRepository->create([
             'post_id' => $post->id,
-            'user_id' => Auth::id() ?? null, // Null for guests
+            'user_id' => Auth::id() ?? null,
             'comment' => $request->comment,
         ]);
 
@@ -38,10 +41,10 @@ class CommentController extends Controller
             return redirect()->back()->with('error', 'Comment not found.');
         }
 
-        $authUserId = Auth::id();
-
-        if ($authUserId !== $comment->user_id && $authUserId !== $comment->post->user_id) {
-            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
+        try {
+            $this->authorize('delete', $comment);
+        } catch (AuthorizationException $e) {
+            return redirect()->route('posts.show', $comment->post_id)->with('error', 'You are not authorized to delete this comment.');
         }
 
         $this->commentRepository->delete($id);
