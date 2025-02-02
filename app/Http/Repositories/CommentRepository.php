@@ -7,13 +7,18 @@ use App\CommentRepositoryInterface;
 
 class CommentRepository implements CommentRepositoryInterface
 {
+    public function find(int $id): ?Comment
+    {
+        return Comment::with('post')->find($id);
+    }
+
     public function create(array $data): Comment
     {
         return Comment::create($data);
     }
 
-    public function delete(Comment $comment): bool
+    public function delete(int $id): bool
     {
-        return $comment->delete();
+        return Comment::where('id', $id)->delete();
     }
 }

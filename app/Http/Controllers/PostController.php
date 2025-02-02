@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeletePostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Post;
 use App\PostRepositoryInterface;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class PostController extends Controller
 {
@@ -17,59 +23,75 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
     }
 
-    public function index(): JsonResponse
+    public function index(): View
     {
-        return response()->json($this->postRepository->all());
+        $posts = $this->postRepository->paginate(10);
+
+        return view('posts.index', compact('posts'));
     }
 
-    public function show(int $id): JsonResponse
+    public function create(): View
     {
-        return response()->json($this->postRepository->find($id));
+        return view('posts.create');
     }
 
-    public function create(): JsonResponse
+    public function show(int $id): View
     {
-        return response()->json(['message' => 'Show post creation form.'], 200);
+        $post = $this->postRepository->find($id);
+
+        return view('posts.show', compact('post'));
     }
 
-    public function store(StorePostRequest $request): JsonResponse
+    public function store(StorePostRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['user_id'] = Auth::id();
+        $this->postRepository->create([
+            'user_id' => Auth::id(),
+            'title' => $request['title'],
+            'content' => $request['content'],
+        ]);
 
-        return response()->json($this->postRepository->create($data), 201);
+        return redirect()->route('posts.index')->with('success', 'Post created successfully.');
     }
 
-    public function edit(int $id): JsonResponse
+    public function edit(int $id): mixed
     {
         $post = $this->postRepository->find($id);
 
         if ($post->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to edit this post.');
         }
 
-        return response()->json(['message' => 'Show edit form.', 'post' => $post]);
+        return view('posts.edit', compact('post'));
     }
 
-    public function update(UpdatePostRequest $request, int $id): JsonResponse
+    public function update(UpdatePostRequest $request, int $id): RedirectResponse
     {
         $post = $this->postRepository->find($id);
 
         if ($post->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to update this post.');
         }
 
-        return response()->json($this->postRepository->update($id, $request->validated()));
+        $this->postRepository->update($id, $request->validated());
+
+        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
 
-    public function destroy(int $id): JsonResponse
+
+    public function destroy(int $id): RedirectResponse
     {
         $post = $this->postRepository->find($id);
 
-        if ($post->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$post) {
+            return redirect()->route('posts.index')->with('error', 'Post not found.');
         }
 
-        return response()->json(['deleted' => $this->postRepository->delete($id)]);
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to delete this post.');
+        }
+
+        $this->postRepository->delete($id);
+
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 }

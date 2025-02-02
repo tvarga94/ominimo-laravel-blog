@@ -5,6 +5,7 @@ namespace App\Http\Repositories;
 use App\Models\Post;
 use App\PostRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -33,5 +34,10 @@ class PostRepository implements PostRepositoryInterface
     public function delete(int $id): bool
     {
         return Post::destroy($id);
+    }
+
+    public function paginate(int $perPage): LengthAwarePaginator
+    {
+        return Post::latest()->paginate($perPage);
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\CommentRepositoryInterface;
-use Illuminate\Http\Request;
-use App\Models\Comment;
+use App\Http\Requests\StoreCommentRequest;
+use Illuminate\Http\RedirectResponse;
 use App\Models\Post;
-
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -17,29 +17,35 @@ class CommentController extends Controller
         $this->commentRepository = $commentRepository;
     }
 
-    public function store(StoreCommentRequest $request, Post $post)
+    public function store(StoreCommentRequest $request, int $id): RedirectResponse
     {
-        $request->validate([
-            'comment' => 'required|string|max:500',
-        ]);
+        $post = Post::findOrFail($id);
 
         $this->commentRepository->create([
             'post_id' => $post->id,
-            'user_id' => auth()->id() ?? null,
-            'comment' => $request->validated()['comment'],
+            'user_id' => Auth::id() ?? null, // Null for guests
+            'comment' => $request->comment,
         ]);
 
-        return redirect()->back()->with('success', 'Comment added!');
+        return redirect()->route('posts.show', $post->id)->with('success', 'Comment added successfully.');
     }
 
-    public function destroy(DeleteCommentRequest $request, Comment $comment)
+    public function destroy(int $id): RedirectResponse
     {
-        if (auth()->id() !== $comment->user_id && auth()->id() !== $comment->post->user_id) {
-            abort(403, 'Unauthorized');
+        $comment = $this->commentRepository->find($id);
+
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Comment not found.');
         }
 
-        $this->commentRepository->delete($comment);
+        $authUserId = Auth::id();
 
-        return redirect()->back()->with('success', 'Comment deleted!');
+        if ($authUserId !== $comment->user_id && $authUserId !== $comment->post->user_id) {
+            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
+        }
+
+        $this->commentRepository->delete($id);
+
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
     }
 }

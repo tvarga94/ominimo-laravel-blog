@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface PostRepositoryInterface
 {
@@ -12,4 +13,5 @@ interface PostRepositoryInterface
     public function create(array $data): Post;
     public function update(int $id, array $data): Post;
     public function delete(int $id): bool;
+    public function paginate(int $perPage): LengthAwarePaginator;
 }
