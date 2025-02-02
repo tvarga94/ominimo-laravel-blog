@@ -13,10 +13,12 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        $users = User::where('role', 'user')->get();
 
-        Post::factory(10)->create([
-            'user_id' => $users->random()->id,
-        ]);
+        foreach ($users as $user) {
+            Post::factory(4)->create([
+                'user_id' => $user->id,
+            ]);
+        }
     }
 }
