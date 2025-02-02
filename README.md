@@ -36,6 +36,11 @@ DB_USERNAME=your_database_user
 DB_PASSWORD=your_database_password
 ```
 
+Now create the database with:
+```sh
+php artisan migrate
+```
+
 ### 3️⃣ Make the Setup Script Executable
 Make sure the setup script is executable and then run it.
 
