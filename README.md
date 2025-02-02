@@ -10,7 +10,6 @@
 # Ominimo Test Task - Laravel Blog
 
 This is a Laravel-based blog project designed as a test task for Ominimo. The application includes user authentication, blog post management, comments, and role-based access control (RBAC) with an admin role.
-
 ---
 
 ## Getting Started
@@ -65,7 +64,7 @@ php artisan test
 - **Role-Based Access Control** (Admin can manage everything, users can only edit their content)
 - **Repository Pattern** for clean and scalable code
 - **Authorization Policies** to restrict access to post and comment actions
-- **Unit & Feature Tests** for core functionalities
+- **Unit Tests** for core functionalities
 
 ---
 
@@ -91,7 +90,6 @@ php artisan test
 
 📂 tests
  ├── Unit (Unit tests for repositories)
- ├── Feature (Feature tests for post & comment interactions)
 ```
 
 ---

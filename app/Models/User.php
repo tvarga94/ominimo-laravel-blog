@@ -12,6 +12,8 @@ class User extends Authenticatable
 {
     public const ROLE_ADMIN = 'admin';
 
+    private string $role = '';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -36,8 +38,6 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    private string $role;
 
     /**
      * Get the attributes that should be cast.
