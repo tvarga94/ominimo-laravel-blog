@@ -9,6 +9,13 @@
 
 # Ominimo Test Task - Laravel Blog
 
+## Requirements
+```sh
+PHP 8.2+
+Node 18+
+NPM 9+
+```
+
 This is a Laravel-based blog project designed as a test task for Ominimo. The application includes user authentication, blog post management, comments, and role-based access control (RBAC) with an admin role.
 ---
 
