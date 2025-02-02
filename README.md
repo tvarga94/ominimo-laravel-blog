@@ -16,7 +16,7 @@ This is a Laravel-based blog project designed as a test task for Ominimo. The ap
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-repo/ominimo-laravel-blog.git
+git@github.com:tvarga94/ominimo-laravel-blog.git
 cd ominimo-laravel-blog
 ```
 
